@@ -1,0 +1,415 @@
+
+In this exercise, you will implement two different array processing
+functions. Your solution should be short: between 50 and 150 lines of
+code, including lines used for spacing.
+
+// ~ Learning Goals ~ //
+
+You should learn:
+(1) How to compile, run, and test your code.
+(2) How to run your code under valgrind, in order to find memory,
+and more generally, programming errors.
+(3) How to "iterate" over arrays in C.
+(4) How to use argc and argv correctly in main.
+
+// ~ Getting Started ~ //
+
+The PE01 folder contains five files:
+(1) answer01.c: this is the file that you hand in. It has the skeleton
+of two functions in it, and you must "fill in the blanks".
+(2) answer01.h: this is a "header" file and it contains a complete
+explanation of the functions you will be writing for this exercise.
+(3) pe01.c: You should use this file to write testing code that
+runs the functions in answer01.c, in order to ensure their
+correctness. pe01.c comes with some example testing code to help you
+get started.  Without arguments, your code should run in test mode, i.e,
+simply the test functions in pe01.c.  With proper arguments, your code should 
+call the correct functions written in answer01.c, and you are supposed to
+write the code to parse the arguments.
+(4) README: this file.
+(5) inputfile: an input file for testing your main function.  It is 
+a file that contains only numbers. 
+
+To get started, read this README in its entirety. Browse through the 
+answer01.h file, to see what code needs to be written. You will be 
+writing code in the answer01.c file. You will also write code in the 
+pe01.c file to test code written in the answer01.c file.  Moreover, 
+you will write code in the main function to call the correct functions 
+in answer01.c.  pe01.c contains the comments telling you the code that 
+needs to be written in pe01.c. 
+
+Follow the discussions below on how to compile and run your code, as
+well as test and submit it.
+
+// ~ Submitting Your Assignment ~ //
+
+You must submit four files:
+(1) answer01.c (7 points): largest_partial_sum function (3.5 points), 
+largest_difference function (3.5 points)
+(2) pe01.c: main function (3 points)
+(3) memcheck.log.1, memcheck.log.2, two Valgrind log files
+that you produced running your program. (2 points)
+
+Use the following command to zip your files:
+
+> zip PE01.zip answer01.c pe01.c memcheck.log.1 memcheck.log.2 
+
+Submit PE01.zip through Blackboard.  You may submit as many
+versions as you like.  We will grade only the final submission. 
+
+// ~ (1a) Compiling Your Program ~ //
+
+The remainder of this document is to help you figure out how to meet
+the learning goals of this exercise. Firstly, you must compile, run
+and test your program.
+
+In this course we use the compiler "gcc", which is one of the world's
+best and most important C compilers. You can compile your program by
+typing the following into the terminal (make sure you are in your PE01
+directory):
+
+> gcc -Wall -Wshadow -Werror -g pe01.c answer01.c -o pe01
+
+Gcc takes a wide variety of arguments, and these are the most
+important arguments that we will use, and re-use in this course. The
+arguments mean:
+(1) -Wall, turn on all *common* compilation warnings. 
+(2) -Wshadow, in addition to common warnings, warn if a variable
+declaration "shadows" the declaration of another variable.
+(3) -Werror, turn warnings into errors.  In other words, you won't 
+get an executable when you have warnings.  Therefore, you have
+to fix all warnings.
+(3) -g, turn on debugging symbols. This produces a larger executable
+program; however, you can use this program in a debugger.  You will
+probably need to use a debugger for more complicated programs.
+(4) pe01.c answer01.c. These are the files that you are compiling and
+linking into a computer program. You compile only ".c" files. You
+never compile ".h" files. Each ".c" file is compiled separately (gcc
+does this internally), and multiple ".c" files are linked together
+into a single computer program. Compiling and linking are two
+different steps, but here we are doing both steps with a single
+instruction. The "int main(...)" function must appear in precisely one
+of those ".c" files (pe01.c). It cannot appear in answer01.c. 
+(5) -o pe01, create an "output file" pe01. By default gcc will produce
+a file called "a.out", and we are just telling gcc to name that file
+"pe01" instead.
+
+// ~ (1b) Running Your Program ~ //
+
+To run your program, simply type into the terminal:
+
+> ./pe01
+
+Note that this should print:
+Welcome to ECE264, we are working on PE01.
+
+Testing largest_partial_sum(...)
+{-4, -1, 0, 1, 5, 10, 20, 21}. partial sum = 0, expected = 57. FAIL
+{}. partial sum = 0, expected = 0.
+{1, 4, -1, 6, -5, 4}. partial sum = 0, expected = 10. FAIL
+{-1, -2, -3, -4}. partial sum = 0, expected = -1. FAIL
+
+Testing largest_difference(...)
+
+As the functions in answer01.c are incomplete, the test cases should fail
+in many instances.  These statements are printed by "printf" statements in 
+different functions in pe01.c. You can (and should) modify pe01.c, and edit its 
+behavior, in order to test the behavior of the functions you are writing 
+in "answer01.c".
+
+The file (technically: compilation unit) pe01.c "knows" about the
+functions in answer01.c, because it "includes" the declarations for
+those functions, which are written in the file "answer01.h". 
+Declarations are not compiled into code, but instead, they merely
+describe the existence of some compilable function in some compilation
+unit somewhere. In this case, the functions declared in answer01.h are
+defined in the compilation unit "answer01.c".
+
+// ~ (2) Running valgrind ~ //
+
+Before you write anything to answer01.c and pe01.c,
+compile the .c files into pe01 and run the following command:
+
+> valgrind --tool=memcheck --leak-check=yes --log-file=memcheck.log.1 ./pe01 
+
+Valgrind is an extremely useful tool for finding problems in C
+programs. It is free-software, and (for C) as good as any software
+commercially available. Comparable commercial software is usually
+worth a few thousand dollars per user. (!).
+
+It is a core goal of this course that you learn how to use Valgrind in
+order to ensure that your exercises/assignments do not have memory or
+programming errors.  Valgrind is an invaluable tool in an engineers toolbox 
+to do what most people in society don't know how to do: ensure that something 
+is correct.
+
+Valgrind has many functions; however, in this course, we will concern
+ourselves with the "memcheck" function. The memcheck function runs
+your code in an emulated environment, and checks whether you access
+any bits of memory that you shouldn't. Memcheck also tests to see if
+you have allocated (asked for) memory that you never freed (gave
+back). Together, these two types of memory problems are some of the
+most pernicious programming problems in the world, and cost literally
+billions of dollars each year. Valgrind will help you find these
+problems.
+
+The preceding command *runs* your program, but to check for errors, you must 
+read the log file that you just generated: "memcheck.log.1". This file
+contains a lot of information. If your solution has no memory errors,
+then you will see at the end of the file something like:
+
+   ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 2 from 2)
+
+Don't worry about suppressed errors: they are not errors. When your
+program runs, the C runtime (almost always) performs a few memory
+tricks in order to execute more efficiently. Memcheck picks up these
+advanced programming tricks, and then they are suppressed because it
+is well-known that these tricks are not errors. Valgrind offers these
+error suppression facilities because they are required by advanced
+developers who work on important "glue" code that holds modern
+operating systems together. In short: don't worry about suppressed
+errors. Google is your friend if you are interested in more
+information; however, it will not be tested in this course.
+
+// ~ (2a) Debugging Valgrind Errors ~ //
+
+If you have errors from valgrind, you should fix them.
+Look for the *first* error, and debug that error. Sometimes you will
+get hundreds (or even hundreds of thousands) or errors; however, they
+may all caused by the same line of code. So just debug the first
+problem you encounter in the "memcheck.log" file.
+
+Most memory errors fall into one of four categories:
+(2a.i) "Invalid read of size X", where X is a number. This means that
+you are reading X bytes of memory that you do not have access to.
+(2a.ii) "Invalid write of size X", as above, except that you are
+*writing* memory. Writing means, that the memory access is on the
+left-hand side of an "=" sign. (ie., assignment operation, eg. x = 5.)
+(2a.iii) "X bytes in 1 blocks definitely lost in loss record U of V",
+which means that you have asked for X bytes of memory, but never freed
+them.
+(2a.iv) "Conditional jump or move depends on uninitialised value(s)" A
+conditional jump or move is what happens in an if statement or a for
+loop, where some condition (e.g., if(x > 5) {...}) determines the next
+line of code that is executed. If the memory is uninitialized (e.g.,
+"x" has not been set), then the program behavior is random. When you
+see this error, look at the involved statement and ask yourself how
+any involved variables could be uninitialized.
+
+These memory errors can be difficult to solve, but it is much easier
+if you think precisely about your code. This is necessary skill, and
+expect to spend much time over this semester learning to do just that.
+
+// ~ (2b) Intentionally injecting an error ~ //
+
+You would have to inject an error in pe01.c to generate
+the other valgrind log file.  Take a look at the
+at the following function in pe01.c
+
+printArray(int * array, int len)
+
+You change the iteration from "ind < len" to "ind <= len".
+Now, you compile and run the valgrind to get memcheck.log.2
+
+> valgrind --tool=memcheck --leak-check=yes --log-file=memcheck.log.2 ./pe01 
+
+Take a look at the file memcheck.log.2.  Do you see the error messages?
+Do the error messages somehow point you to the source of the error?
+In particular, a subset of error messages may look like the following:
+
+==18690== Conditional jump or move depends on uninitialised value(s)
+==18690==    at 0x4E8158E: vfprintf (vfprintf.c:1660)
+==18690==    by 0x4E8B498: printf (printf.c:33)
+==18690==    by 0x400975: printArray (pe01.c:22)
+==18690==    by 0x400C36: test_largest_partial_sum (pe01.c:108)
+==18690==    by 0x400D08: test_00_largest_partial_sum (pe01.c:128)
+==18690==    by 0x400DD7: main (pe01.c:163)
+
+Both printf and vfprintf are functions provided by the system and they 
+are out of your control.  You should pay attention to the messages
+that correspond to functions in your program.  In this case, you
+should look at printArray in pe01.c at around line 22.  In other words,
+valgrind actually tells you where the problems are.
+
+Next, revert back to the original printArray function before you
+start to write the functions largest_partial_sum and largest_difference
+in answer01.c and the main function in pe01.c.
+
+// ~ (2c) Submitting two Valgrind Log Files ~ //
+
+In order to pass this exercise, you must submit the two log files produced
+by valgrind. See the section on submitting your exercise (above) for
+information on how to do that.
+
+// ~ (3) Iterating Over Arrays in C ~ //
+
+In programming, iterating means visiting every element of a
+"collection" once, and only once. An array is the most fundamental
+type of collection, having a fixed size, and storing the elements
+sequentially. The easiest way to iterate over an array is to use an
+"index" variable in a for-loop:
+
+   // Assume we have an array "array", with length "len"
+   int ind; // the index variable
+   for(ind = 0; ind < len; ++ind) {
+      // do something with array[ind]
+   }
+
+You should already be familiar with this programming motif from
+earlier courses. Please refer to the class notes and course materials
+in order to understand how to iterate over arrays in C.
+
+Both functions largest_partial_sum and largest_difference require
+you to iterate over an array to compute the largest partial sum and
+the largest difference.
+
+A array of length len has "len" partial sums.  The (i,j)-th partial
+sum is the sum of array[i] through array[j], 0 <= i <= j < len. There
+are a total of (len)(len+1)/2 partial sums:  (0,0)-th, ..., (0, len-1)-th,
+(1,1)-th, ..., (1, len-1)-th, ..., (len-1,len-1)-th.  The 
+function largest_partial_sum computes the largest among these
+partial sums.  If the array is of length 0, the partial sum is
+defined to be 0.
+
+The function largest_difference finds the largest element and
+the smallest element in any array and calculate their difference
+(largest - smallest).  If the array is of length 0 or length 1, the
+largest difference is defined to be 0.
+
+These two functions are to be written in answer01.c.
+
+// ~ (3a) Testing Your Program ~ //
+
+It is your responsibility to test your program and ensure that it
+works. A program that is correct 99% of the time is still non-functional.
+It is very difficult to write programs correctly, and large programs almost 
+always contain subtle bugs. For this reason, software engineers should
+adopt a zero-tolerance policy for software defects. 
+
+Please note that receiving a passing grade for a function/program
+does not mean your exercise is perfect, but it does mean that your 
+exercise passes the tests we thought to put it through. 
+
+Testing your own program is a fundamental skill if you want to be
+a programmer.  
+
+So how do you write and test your code?
+
+The most important thing to understand is that you should test your
+code as you go. Because you are just starting, pe01.c includes a
+little bit of testing code to start you off. However, in future
+exercises/assignments, you will have to generate all of the testing code
+yourself.
+
+The sample testing routine provided is named test_00_largest_partial_sum().
+You probably want to write test_01_largest_difference().
+
+To write your own testing code, you have to *think* about the function your
+developing, and then you have to write code that *demonstrates* that
+it *always* works. This is a core skill to develop if you are
+interested in being a competent computer programmer.
+
+// ~ (4) Running Your Program with arguments ~ //
+
+In pe01.c, you also have to fill in the main function with
+correct statements so that you will get the following
+screen output for when you type in different commands:
+
+> ./pe01 0 inputfile
+Welcome to ECE264, we are working on PE01.
+
+{142, 44, 333, 33, 246, 40, -10, -204, 190}
+838
+> ./pe01 1 inputfile
+Welcome to ECE264, we are working on PE01.
+
+{142, 44, 333, 33, 246, 40, -10, -204, 190}
+537
+> ./pe01 193 inputfile
+Welcome to ECE264, we are working on PE01.
+
+{142, 44, 333, 33, 246, 40, -10, -204, 190}
+0
+> ./pe01 inputfile
+Welcome to ECE264, we are working on PE01.
+
+> ./pe01
+Welcome to ECE264, we are working on PE01.
+
+Testing largest_partial_sum(...)
+{-4, -1, 0, 1, 5, 10, 20, 21}. partial sum = 57, expected = 57.
+{}. partial sum = 0, expected = 0.
+{1, 4, -1, 6, -5, 4}. partial sum = 10, expected = 10.
+{-1, -2, -3, -4}. partial sum = -1, expected = -1.
+
+Testing largest_difference(...)
+
+In the third to last command, the first
+argument is invalid.  In the second to last command,
+We are short of 1 argument.  If an invalid
+filename is given, the array will be a NULL
+array, and variable len will stay as 0.  
+You should only worry about the handling of the
+first argument correctly.  I have already
+handle the second argument for you correctly.
+You should also not have to write any "printf"
+statement in the main function.  You are
+allowed to write "printf" statement in
+your test functions.  In the last command,
+the test function test_00_largest_partial_sum 
+and the incomplete test function test_01_largest_difference
+is run.
+
+You can also create a different file, inputfile_alt, for
+example, and use that file in the commands.
+ 
+// ~ (4a) Running ./pe01 Under Valgrind ~ //
+
+You should also run ./pe01 with arguments under valgrind.
+To do that, you have to use for example the following command:
+
+> valgrind --tool=memcheck --leak-check=yes --log-file=memcheck.log ./pe01 1 inputfile
+
+// ~ Warning ~ //
+
+The only places for you put printf statement is in the test functions that
+you may write.  The main function, as well as the two functions in answer01.c
+should not have other printf statement added to the functions.  If your output
+does not match our expected output because of additional printf statement you
+have added, you will get 0 for that particular test case.  
+
+The bottomline is that you should not be using printf to debug your program.
+
+You are not submitting answer01.h.  Therefore, you should not make changes
+to answer01.h.
+
+You can declare and define additional functions that you have to use in
+pe01.c and answer01.c. 
+
+Grading of programming exercises and assignments is performed on
+ecegrid.ecn.purdue.edu.  You should perform testing of your work
+on ecegrid.ecn.purdue.edu before submission.  Correct output on
+your computer does not translate into correct output on
+ecegrid.ecn.purdue.edu.
+
+// ~ Summary ~ //
+
+# Compile 
+> gcc -Wall -Wshadow -Werror -g pe01.c answer01.c -o pe01
+
+# Run -- you must write your own tests
+> ./pe01
+
+# Run under valgrind -- you must do it on the files given to you without modification, and then 
+modify the pe01.c to inject errors.  You must also name the log files correctly.
+
+> valgrind --tool=memcheck --leak-check=yes --log-file=memcheck.log ./pe01
+
+# Don't forget to *LOOK* at the log-file "memcheck.log"
+
+# Submit the files: Use the zip command below and submit PE01.zip through 
+Blackboard.
+
+> zip PE01.zip answer01.c pe01.c memcheck.log.1 memcheck.log.2 
+
+# Please read all instructions before asking for help.
